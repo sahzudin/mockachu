@@ -1,0 +1,96 @@
+[
+    {
+        "brand": "Visa",
+        "patterns": [
+            "4XXX XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "MasterCard",
+        "patterns": [
+            "51XX XXXX XXXX XXXX",
+            "52XX XXXX XXXX XXXX",
+            "53XX XXXX XXXX XXXX",
+            "54XX XXXX XXXX XXXX",
+            "55XX XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "American Express",
+        "patterns": [
+            "34XX XXXXXXXXX"
+        ]
+    },
+    {
+        "brand": "Discover",
+        "patterns": [
+            "6011 XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "Diners Club",
+        "patterns": [
+            "30XX XXXX XXXX XXXX",
+            "31XX XXXX XXXX XXXX",
+            "32XX XXXX XXXX XXXX",
+            "33XX XXXX XXXX XXXX",
+            "34XX XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "JCB",
+        "patterns": [
+            "35XX XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "Maestro",
+        "patterns": [
+            "50XX XXXX XXXX XXXX",
+            "56XX XXXX XXXX XXXX",
+            "57XX XXXX XXXX XXXX",
+            "58XX XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "UnionPay",
+        "patterns": [
+            "620X XXXX XXXX XXXX",
+            "621X XXXX XXXX XXXX",
+            "622X XXXX XXXX XXXX",
+            "623X XXXX XXXX XXXX",
+            "624X XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "Mir",
+        "patterns": [
+            "2200 XXXX XXXX XXXX",
+            "2201 XXXX XXXX XXXX",
+            "2202 XXXX XXXX XXXX",
+            "2203 XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "Carte Blanche",
+        "patterns": [
+            "3890 XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "Solo",
+        "patterns": [
+            "6334 XXXX XXXX XXXX",
+            "6767 XXXX XXXX XXXX"
+        ]
+    },
+    {
+        "brand": "Switch",
+        "patterns": [
+            "4903 XXXX XXXX XXXX",
+            "4905 XXXX XXXX XXXX",
+            "4911 XXXX XXXX XXXX",
+            "4936 XXXX XXXX XXXX"
+        ]
+    }
+]

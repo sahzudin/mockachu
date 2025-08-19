@@ -1,0 +1,25 @@
+# Include the README and license
+include README.md
+include LICENSE
+
+# Include package data
+recursive-include mockachu/res *
+recursive-include mockachu/ui/res *
+recursive-include mockachu/ui/styles *
+recursive-include mockachu/localization/strings *
+
+# Include configuration files
+include pyproject.toml
+include requirements.txt
+
+# Exclude unwanted files
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.log
+global-exclude *.tmp
+global-exclude .git*
+global-exclude test_*
+global-exclude *_test.py
+global-exclude debug_*
+global-exclude *_debug.py

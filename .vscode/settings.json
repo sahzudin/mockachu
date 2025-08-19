@@ -1,0 +1,23 @@
+{
+    "python.defaultInterpreterPath": "./.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.analysis.extraPaths": [
+        "./generators",
+        "./services",
+        "./ui"
+    ],
+    "python.analysis.autoImportCompletions": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        ".pytest_cache": true,
+        "gui_debug.log": false
+    },
+    "python.debugging.console": "integratedTerminal",
+    "debug.console.fontSize": 14,
+    "debug.console.fontFamily": "Monaco, 'Courier New', monospace"
+}

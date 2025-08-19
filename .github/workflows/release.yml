@@ -1,0 +1,333 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0
+  release:
+    types: [published]
+  workflow_dispatch:  # Allow manual triggering
+
+permissions:
+  contents: write
+  actions: read
+  checks: write
+  deployments: write
+  issues: write
+  packages: write
+  pull-requests: write
+  repository-projects: write
+  security-events: write
+  statuses: write
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+            executable: mockachu
+            archive: Mockachu-Linux.tar.gz
+          - os: windows-latest
+            platform: windows
+            arch: x64
+            executable: Mockachu.exe
+            archive: Mockachu-Windows.zip
+          - os: macos-latest
+            platform: macos
+            arch: x64
+            executable: Mockachu.app
+            archive: Mockachu-macOS.zip
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    # Linux specific setup
+    - name: Install Linux dependencies
+      if: matrix.platform == 'linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libxkbcommon-x11-0 \
+          libxcb-icccm4 \
+          libxcb-image0 \
+          libxcb-keysyms1 \
+          libxcb-randr0 \
+          libxcb-render-util0 \
+          libxcb-shape0 \
+          libxcb-xfixes0 \
+          libxcb-xinerama0 \
+          libxcb-cursor0 \
+          libglib2.0-0 \
+          libgl1-mesa-dri \
+          libegl1 \
+          libfontconfig1 \
+          libxss1 \
+          libxtst6 \
+          libxrandr2 \
+          libasound2t64 \
+          libpangocairo-1.0-0 \
+          libatk1.0-0 \
+          libcairo-gobject2 \
+          libgtk-3-0 \
+          libgdk-pixbuf2.0-0 \
+          libxcb1 \
+          libdbus-1-3
+
+    # macOS specific setup
+    - name: Install macOS dependencies
+      if: matrix.platform == 'macos'
+      run: |
+        # Install any macOS specific dependencies if needed
+        echo "Setting up macOS build environment"
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[gui]"
+        pip install pyinstaller
+        pip install Pillow
+
+    - name: Create version info (Windows only)
+      if: matrix.platform == 'windows'
+      run: |
+        # Update version in version_info.txt with actual version from git tag
+        if ($env:GITHUB_REF -match 'refs/tags/v(.+)') {
+          $version = $matches[1]
+          $versionParts = $version.Split('.')
+          while ($versionParts.Length -lt 4) { $versionParts += '0' }
+          $fileVersion = "$($versionParts[0]),$($versionParts[1]),$($versionParts[2]),$($versionParts[3])"
+          
+          (Get-Content version_info.txt) -replace 'filevers=\(1, 0, 0, 0\)', "filevers=($fileVersion)" |
+          Set-Content version_info.txt
+          (Get-Content version_info.txt) -replace 'prodvers=\(1, 0, 0, 0\)', "prodvers=($fileVersion)" |
+          Set-Content version_info.txt
+          (Get-Content version_info.txt) -replace "u'FileVersion', u'1.0.0.0'", "u'FileVersion', u'$version.0'" |
+          Set-Content version_info.txt
+          (Get-Content version_info.txt) -replace "u'ProductVersion', u'1.0.0.0'", "u'ProductVersion', u'$version.0'" |
+          Set-Content version_info.txt
+        }
+      shell: powershell
+
+    - name: Build executable
+      run: |
+        pyinstaller build.spec --clean --noconfirm
+
+    - name: Create archive (Linux)
+      if: matrix.platform == 'linux'
+      run: |
+        cd dist
+        tar -czf ${{ matrix.archive }} ${{ matrix.executable }}
+
+    - name: Create archive (Windows)
+      if: matrix.platform == 'windows'
+      run: |
+        cd dist
+        Compress-Archive -Path ${{ matrix.executable }} -DestinationPath ${{ matrix.archive }}
+      shell: powershell
+
+    - name: Create archive (macOS)
+      if: matrix.platform == 'macos'
+      run: |
+        cd dist
+        zip -r ${{ matrix.archive }} ${{ matrix.executable }}
+
+    - name: Calculate checksums
+      run: |
+        cd dist
+        if [ "${{ matrix.platform }}" = "windows" ]; then
+          certutil -hashfile ${{ matrix.archive }} SHA256 > ${{ matrix.archive }}.sha256
+        else
+          shasum -a 256 ${{ matrix.archive }} > ${{ matrix.archive }}.sha256
+        fi
+      shell: bash
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }}-build
+        path: |
+          dist/${{ matrix.archive }}
+          dist/${{ matrix.archive }}.sha256
+
+    - name: Get file info
+      id: file_info
+      run: |
+        cd dist
+        if [ "${{ matrix.platform }}" = "windows" ]; then
+          SIZE=$(powershell -command "(Get-Item '${{ matrix.archive }}').Length")
+        else
+          SIZE=$(stat -c%s "${{ matrix.archive }}" 2>/dev/null || stat -f%z "${{ matrix.archive }}")
+        fi
+        echo "size=$SIZE" >> $GITHUB_OUTPUT
+        echo "file=${{ matrix.archive }}" >> $GITHUB_OUTPUT
+      shell: bash
+
+    outputs:
+      windows_file: ${{ matrix.platform == 'windows' && steps.file_info.outputs.file || '' }}
+      windows_size: ${{ matrix.platform == 'windows' && steps.file_info.outputs.size || '' }}
+      macos_file: ${{ matrix.platform == 'macos' && steps.file_info.outputs.file || '' }}
+      macos_size: ${{ matrix.platform == 'macos' && steps.file_info.outputs.size || '' }}
+      linux_file: ${{ matrix.platform == 'linux' && steps.file_info.outputs.file || '' }}
+      linux_size: ${{ matrix.platform == 'linux' && steps.file_info.outputs.size || '' }}
+
+  python-wheel:
+    name: Build Python Wheel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build wheel and source distribution
+        run: |
+          python -m build
+
+      - name: Create wheel archive
+        run: |
+          mkdir -p python-dist
+          cp dist/* python-dist/
+          cd python-dist
+          tar -czf ../Mockachu-Python-Wheel.tar.gz *
+          cd ..
+          sha256sum Mockachu-Python-Wheel.tar.gz > Mockachu-Python-Wheel.tar.gz.sha256
+
+      - name: Upload wheel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-wheel
+          path: |
+            Mockachu-Python-Wheel.tar.gz
+            Mockachu-Python-Wheel.tar.gz.sha256
+
+  release:
+    name: Create Release
+    needs: [build, python-wheel]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+
+    - name: Display structure of downloaded files
+      run: ls -la */
+
+    - name: Get version from tag
+      id: get_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: Mockachu v${{ steps.get_version.outputs.version }}
+        body: |
+          # Mockachu v${{ steps.get_version.outputs.version }}
+
+          ## Download Links
+
+          ### Desktop Application
+          - **Windows**: [Mockachu-Windows.zip](./Mockachu-Windows.zip)
+          - **macOS**: [Mockachu-macOS.zip](./Mockachu-macOS.zip)  
+          - **Linux**: [Mockachu-Linux.tar.gz](./Mockachu-Linux.tar.gz)
+
+          ### Python Package (No Security Warnings)
+          - **Python Wheel**: [Mockachu-Python-Wheel.tar.gz](./Mockachu-Python-Wheel.tar.gz)
+
+          ## Installation
+
+          ### Pre-built Executables
+
+          **⚠️ Security Note**: Pre-built executables will show security warnings on first run because they're not code-signed. See [Security Information](https://github.com/sahzudin/mockachu#-security-information) for bypass instructions.
+
+          **Windows:**
+          1. Download `Mockachu-Windows.zip`
+          2. Extract the archive
+          3. Run `Mockachu.exe`
+
+          **macOS:**
+          1. Download `Mockachu-macOS.zip`
+          2. Extract the archive
+          3. Move `Mockachu.app` to Applications folder
+          4. Right-click and select "Open" (required for first run due to Gatekeeper)
+
+          **Linux:**
+          1. Download `Mockachu-Linux.tar.gz`
+          2. Extract: `tar -xzf Mockachu-Linux.tar.gz`
+          3. Run: `./mockachu`
+
+          ### Python Package (Recommended)
+
+          **No security warnings, requires Python 3.8+:**
+          ```bash
+          # Download and extract the Python wheel
+          tar -xzf Mockachu-Python-Wheel.tar.gz
+          cd python-dist
+          
+          # Install with GUI support
+          pip install mock_data_generator-*.whl[gui]
+          
+          # Run the application
+          mockachu
+          ```
+
+          **Or install directly from PyPI:**
+          ```bash
+          pip install mockachu[gui]
+          mockachu
+          ```
+
+          ## Checksums
+          SHA256 checksums are provided for each download to verify integrity.
+
+          ## What's New
+          - ✅ Fixed application icon display in macOS app bundle
+          - ✅ Full Flask-RestX API server with Swagger UI embedded
+          - ✅ All API endpoints functional: /, /health, /generators, /generate
+          - ✅ Fixed BSON dependency and MongoDB ObjectID generation
+          - ✅ Enhanced build system for cross-platform deployment
+
+          For more information, see the [README](https://github.com/sahzudin/mockachu/blob/main/README.md).
+        files: |
+          linux-build/Mockachu-Linux.tar.gz
+          linux-build/Mockachu-Linux.tar.gz.sha256
+          windows-build/Mockachu-Windows.zip
+          windows-build/Mockachu-Windows.zip.sha256
+          macos-build/Mockachu-macOS.zip
+          macos-build/Mockachu-macOS.zip.sha256
+          python-wheel/Mockachu-Python-Wheel.tar.gz
+          python-wheel/Mockachu-Python-Wheel.tar.gz.sha256
+        draft: false
+        prerelease: false

@@ -1,0 +1,112 @@
+Bank of America
+JPMorgan Chase
+Wells Fargo
+Citigroup
+Goldman Sachs
+Morgan Stanley
+U.S. Bancorp
+TD Bank
+PNC Financial Services
+Capital One
+HSBC
+Barclays
+Royal Bank of Canada
+Deutsche Bank
+UBS
+Credit Suisse
+BNP Paribas
+Santander
+Societe Generale
+ING Group
+UniCredit
+Nordea
+Standard Chartered
+Credit Agricole
+BBVA
+Lloyds Banking Group
+RBS Group
+Commerzbank
+Danske Bank
+SEB
+Handelsbanken
+Swedbank
+KBC Bank
+Erste Group
+DZ Bank
+Rabobank
+Banco Sabadell
+Banco Popular Espanol
+CaixaBank
+Bankia
+Banco de Valencia
+Banco Pastor
+Banco Santander
+Banco Bilbao Vizcaya Argentaria
+Banco Popular Espanol
+Banco de Sabadell
+Bankinter
+Kutxabank
+Unicaja Banco
+Liberbank
+Caja Rural
+Evo Banco
+Banco Pichincha Espana
+Banco Caminos
+Self Bank
+Openbank
+ING Direct NV
+Triodos Bank NV
+Banco Mediolanum
+Cecabank
+Caja Rural de Granada
+Bancofar
+Caja Rural del Sur
+Caja Rural de Navarra
+Industrial and Commercial Bank of China
+Agricultural Bank of China
+China Construction Bank
+Bank of China
+Mitsubishi UFJ Financial Group
+Sumitomo Mitsui Financial Group
+Mizuho Financial Group
+Postal Savings Bank of China
+China Merchants Bank
+China Development Bank
+Industrial Bank (China)
+China CITIC Bank
+Shanghai Pudong Development Bank
+China Everbright Bank
+Credit Mutuel Group
+State Bank of India
+National Australia Bank
+Commonwealth Bank of Australia
+Bank of Nova Scotia
+Bank of Montreal
+Canadian Imperial Bank of Commerce
+ANZ Group
+Export‑Import Bank of China
+Standard Bank Group
+National Bank of Egypt
+Banque Misr
+FirstRand
+Absa Bank
+Attijariwafa Bank
+Nedbank
+Banque Populaire (Morocco)
+Access Bank
+United Bank for Africa
+Ecobank
+First Bank of Nigeria
+Zenith Bank
+Commercial Bank of Ethiopia
+DBS Bank
+Bank Central Asia
+Bank Rakyat Indonesia
+OCBC Bank
+United Overseas Bank
+Bank Mandiri
+Maybank
+Public Bank Berhad
+Vietcombank
+CIMB
+BDO Unibank

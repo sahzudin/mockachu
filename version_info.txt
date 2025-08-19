@@ -1,0 +1,41 @@
+# UTF-8
+#
+# Version information for Windows executable
+# Enhanced metadata to reduce false positive virus detection
+#
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 1, 3, 0),
+    prodvers=(1, 1, 3, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+        StringTable(
+          u'040904B0',
+          [
+            StringStruct(u'CompanyName', u'Mockachu Contributors'),
+            StringStruct(u'FileDescription', u'Mockachu - Mock Data Generator Desktop Application'),
+            StringStruct(u'FileVersion', u'1.1.3.0'),
+            StringStruct(u'InternalName', u'Mockachu'),
+            StringStruct(u'LegalCopyright', u'MIT License - Open Source Software'),
+            StringStruct(u'LegalTrademarks', u''),
+            StringStruct(u'OriginalFilename', u'Mockachu.exe'),
+            StringStruct(u'ProductName', u'Mockachu Mock Data Generator'),
+            StringStruct(u'ProductVersion', u'1.1.3.0'),
+            StringStruct(u'Comments', u'Open source mock data generation tool built with Python and PyQt6'),
+            StringStruct(u'PrivateBuild', u''),
+            StringStruct(u'SpecialBuild', u'')
+          ]
+        )
+      ]
+    ),
+    VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
+  ]
+)
